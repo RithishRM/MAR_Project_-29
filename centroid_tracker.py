@@ -28,7 +28,7 @@ class CentroidTracker:
     def __init__(self, max_disappeared: int = 10, max_distance: float = 60.0):
         self.next_object_id = 0
         self.objects: OrderedDict[int, np.ndarray] = OrderedDict()   # id -> centroid (x, y)
-        self.colors:  OrderedDict[int, str]        = OrderedDict()   # id -> "red" | "green"
+        self.colors:  OrderedDict[int, str]        = OrderedDict()   # id -> "red" | "yellow"
         self.disappeared: OrderedDict[int, int]    = OrderedDict()   # id -> frame count missing
 
         self.max_disappeared = max_disappeared
@@ -65,7 +65,7 @@ class CentroidTracker:
         detections : list of dict
             Each dict must contain:
                 "centroid" : (x, y)  – centre pixel of the detected blob
-                "color"    : str     – "red" or "green"
+                "color"    : str     – "red" or "yellow"
 
         Returns
         -------
@@ -142,8 +142,8 @@ class CentroidTracker:
         return result
 
     def count_by_color(self) -> dict:
-        """Returns {"red": N, "green": M} for the current frame."""
-        counts = {"red": 0, "green": 0}
+        """Returns {"red": N, "yellow": M} for the current frame."""
+        counts = {"red": 0, "yellow": 0}
         for oid in self.colors:
             c = self.colors[oid]
             if c in counts:

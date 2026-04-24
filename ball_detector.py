@@ -2,7 +2,7 @@
 ball_detector.py
 ----------------
 Person A | Vision Engineering Layer
-Project: #29 – Red/Green Ball Detector
+Project: #29 – Red/Yellow Ball Detector
 
 Covers:
   1. HSV color space optimisation (with dual-range red handling)
@@ -70,7 +70,7 @@ def get_mask(frame: np.ndarray, color: str, hsv_ranges: dict) -> np.ndarray:
     Parameters
     ----------
     frame      : raw BGR frame
-    color      : "red" or "green"
+    color      : "red" or "yellow"
     hsv_ranges : dict from HSVControlPanel.get_ranges()
 
     Returns
@@ -86,11 +86,11 @@ def get_mask(frame: np.ndarray, color: str, hsv_ranges: dict) -> np.ndarray:
             cv2.inRange(hsv, r["lower1"], r["upper1"]),  # hue  0-10
             cv2.inRange(hsv, r["lower2"], r["upper2"]),  # hue 160-180
         )
-    elif color == "green":
-        g    = hsv_ranges["green"]
-        mask = cv2.inRange(hsv, g["lower"], g["upper"])
+    elif color == "yellow":
+        y    = hsv_ranges["yellow"]
+        mask = cv2.inRange(hsv, y["lower"], y["upper"])
     else:
-        raise ValueError(f"Unsupported color: {color!r}. Use 'red' or 'green'.")
+        raise ValueError(f"Unsupported color: {color!r}. Use 'red' or 'yellow'.")
 
     # ── Morphological cleanup ──────────────────────────────────────────
     # Elliptical kernel — better than square for round objects

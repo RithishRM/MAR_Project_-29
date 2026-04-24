@@ -2,7 +2,7 @@
 main.py
 -------
 Person B | Main Processing Pipeline
-Project: #29 – Red/Green Ball Detector
+Project: #29 – Red/Yellow Ball Detector
 
 This is the "main loop" that ties together:
   • ThreadedCamera     — lag-free frame capture
@@ -59,9 +59,11 @@ def _stub_get_mask(frame: np.ndarray, color: str, hsv_ranges: dict) -> np.ndarra
         m1 = cv2.inRange(hsv, r["lower1"], r["upper1"])
         m2 = cv2.inRange(hsv, r["lower2"], r["upper2"])
         mask = cv2.bitwise_or(m1, m2)
+    elif color == "yellow":
+        y = hsv_ranges["yellow"]
+        mask = cv2.inRange(hsv, y["lower"], y["upper"])
     else:
-        g = hsv_ranges["green"]
-        mask = cv2.inRange(hsv, g["lower"], g["upper"])
+        raise ValueError(f"Unsupported color: {color!r}. Use 'red' or 'yellow'.")
 
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
     mask   = cv2.morphologyEx(mask, cv2.MORPH_OPEN,  kernel)
@@ -111,7 +113,7 @@ def run(camera_src: int | str = 0) -> None:
     time.sleep(0.3)
 
     debug_mode   = False
-    COLORS       = ["red", "green"]
+    COLORS       = ["red", "yellow"]
     OUTPUT_WIN   = "Ball Tracker — Press Q to quit"
 
     cv2.namedWindow(OUTPUT_WIN, cv2.WINDOW_NORMAL)
@@ -185,15 +187,15 @@ def run(camera_src: int | str = 0) -> None:
             combined  = np.zeros((debug_h, debug_w * 2, 3), dtype=np.uint8)
 
             r_viz = cv2.resize(masks["red"],   (debug_w, debug_h))
-            g_viz = cv2.resize(masks["green"], (debug_w, debug_h))
+            y_viz = cv2.resize(masks["yellow"], (debug_w, debug_h))
 
             combined[:, :debug_w]         = cv2.cvtColor(r_viz, cv2.COLOR_GRAY2BGR)
-            combined[:, debug_w:debug_w*2] = cv2.cvtColor(g_viz, cv2.COLOR_GRAY2BGR)
+            combined[:, debug_w:debug_w*2] = cv2.cvtColor(y_viz, cv2.COLOR_GRAY2BGR)
 
             cv2.putText(combined, "RED mask",   (10, 20),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,30,220), 1)
-            cv2.putText(combined, "GREEN mask", (debug_w+10, 20),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,200,60), 1)
+            cv2.putText(combined, "YELLOW mask", (debug_w+10, 20),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,220,220), 1)
 
             # Overlay debug strip at bottom of display
             display[h - debug_h:, :debug_w * 2] = combined

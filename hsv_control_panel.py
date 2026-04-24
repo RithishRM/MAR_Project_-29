@@ -17,7 +17,7 @@ Usage
     # {
     #   "red":   {"lower1": array, "upper1": array,
     #             "lower2": array, "upper2": array},   # red wraps hue
-    #   "green": {"lower":  array, "upper":  array},
+    #   "yellow": {"lower":  array, "upper":  array},
     # }
 """
 
@@ -33,7 +33,7 @@ class HSVControlPanel:
     Provides two trackbar groups:
       RED  : H-Lo1, H-Hi1, H-Lo2, H-Hi2  (red wraps 0..10 and 160..180)
              S-Lo, S-Hi, V-Lo, V-Hi
-      GREEN: H-Lo, H-Hi, S-Lo, S-Hi, V-Lo, V-Hi
+    YELLOW: H-Lo, H-Hi, S-Lo, S-Hi, V-Lo, V-Hi
 
     All trackbars live in a single named window.
     """
@@ -45,10 +45,10 @@ class HSVControlPanel:
         "R_H_Lo2": 160, "R_H_Hi2": 180,
         "R_S_Lo":  120, "R_S_Hi":  255,
         "R_V_Lo":  70,  "R_V_Hi":  255,
-        # Green hue: 35-85
-        "G_H_Lo":  35,  "G_H_Hi":  85,
-        "G_S_Lo":  80,  "G_S_Hi":  255,
-        "G_V_Lo":  50,  "G_V_Hi":  255,
+        # Yellow hue: ~20-35 (typical indoor starting point)
+        "Y_H_Lo":  20,  "Y_H_Hi":  35,
+        "Y_S_Lo":  80,  "Y_S_Hi":  255,
+        "Y_V_Lo":  80,  "Y_V_Hi":  255,
     }
 
     def __init__(self, window_name: str = WINDOW_NAME):
@@ -74,13 +74,13 @@ class HSVControlPanel:
         cv2.createTrackbar("RED  V-Lo",            self.win, d["R_V_Lo"],  255, self._noop)
         cv2.createTrackbar("RED  V-Hi",            self.win, d["R_V_Hi"],  255, self._noop)
 
-        # ── GREEN group ───────────────────────────────────────────────
-        cv2.createTrackbar("GRN  H-Lo",            self.win, d["G_H_Lo"],  180, self._noop)
-        cv2.createTrackbar("GRN  H-Hi",            self.win, d["G_H_Hi"],  180, self._noop)
-        cv2.createTrackbar("GRN  S-Lo",            self.win, d["G_S_Lo"],  255, self._noop)
-        cv2.createTrackbar("GRN  S-Hi",            self.win, d["G_S_Hi"],  255, self._noop)
-        cv2.createTrackbar("GRN  V-Lo",            self.win, d["G_V_Lo"],  255, self._noop)
-        cv2.createTrackbar("GRN  V-Hi",            self.win, d["G_V_Hi"],  255, self._noop)
+        # ── YELLOW group ──────────────────────────────────────────────
+        cv2.createTrackbar("YLW  H-Lo",            self.win, d["Y_H_Lo"],  180, self._noop)
+        cv2.createTrackbar("YLW  H-Hi",            self.win, d["Y_H_Hi"],  180, self._noop)
+        cv2.createTrackbar("YLW  S-Lo",            self.win, d["Y_S_Lo"],  255, self._noop)
+        cv2.createTrackbar("YLW  S-Hi",            self.win, d["Y_S_Hi"],  255, self._noop)
+        cv2.createTrackbar("YLW  V-Lo",            self.win, d["Y_V_Lo"],  255, self._noop)
+        cv2.createTrackbar("YLW  V-Hi",            self.win, d["Y_V_Hi"],  255, self._noop)
 
     # ------------------------------------------------------------------
 
@@ -109,7 +109,7 @@ class HSVControlPanel:
               "lower2": np.array([H, S, V]),
               "upper2": np.array([H, S, V]),
           },
-          "green": {
+                    "yellow": {
               "lower": np.array([H, S, V]),
               "upper": np.array([H, S, V]),
           }
@@ -120,10 +120,10 @@ class HSVControlPanel:
         r_v_lo = self._tb("RED  V-Lo")
         r_v_hi = self._tb("RED  V-Hi")
 
-        g_s_lo = self._tb("GRN  S-Lo")
-        g_s_hi = self._tb("GRN  S-Hi")
-        g_v_lo = self._tb("GRN  V-Lo")
-        g_v_hi = self._tb("GRN  V-Hi")
+        y_s_lo = self._tb("YLW  S-Lo")
+        y_s_hi = self._tb("YLW  S-Hi")
+        y_v_lo = self._tb("YLW  V-Lo")
+        y_v_hi = self._tb("YLW  V-Hi")
 
         return {
             "red": {
@@ -132,9 +132,9 @@ class HSVControlPanel:
                 "lower2": np.array([self._tb("RED  H-Lo2 (160–180)"),r_s_lo, r_v_lo]),
                 "upper2": np.array([self._tb("RED  H-Hi2 (160–180)"),r_s_hi, r_v_hi]),
             },
-            "green": {
-                "lower": np.array([self._tb("GRN  H-Lo"), g_s_lo, g_v_lo]),
-                "upper": np.array([self._tb("GRN  H-Hi"), g_s_hi, g_v_hi]),
+            "yellow": {
+                "lower": np.array([self._tb("YLW  H-Lo"), y_s_lo, y_v_lo]),
+                "upper": np.array([self._tb("YLW  H-Hi"), y_s_hi, y_v_hi]),
             },
         }
 
@@ -144,5 +144,5 @@ class HSVControlPanel:
         print("\n── Current HSV Ranges ────────────────────────")
         print(f"  RED  lower1 = {r['red']['lower1']}  upper1 = {r['red']['upper1']}")
         print(f"  RED  lower2 = {r['red']['lower2']}  upper2 = {r['red']['upper2']}")
-        print(f"  GRN  lower  = {r['green']['lower']}  upper  = {r['green']['upper']}")
+        print(f"  YLW  lower  = {r['yellow']['lower']}  upper  = {r['yellow']['upper']}")
         print("──────────────────────────────────────────────\n")

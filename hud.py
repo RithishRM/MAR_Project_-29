@@ -79,7 +79,7 @@ class HUDRenderer:
         """
         Draw a circle + label for every tracked object.
 
-        tracked : {obj_id: {"centroid": (x,y), "color": "red"|"green"}}
+        tracked : {obj_id: {"centroid": (x,y), "color": "red"|"yellow"}}
         radii   : optional radius per ID; falls back to a default of 20 px.
         """
         default_radius = 20
@@ -120,22 +120,22 @@ class HUDRenderer:
     def draw_info_panel(
         self,
         frame: np.ndarray,
-        counts: dict,           # {"red": N, "green": M}
+        counts: dict,           # {"red": N, "yellow": M}
         fps: float,
         extra_lines: list[str] | None = None,
     ) -> None:
         """
-        Draws a semi-transparent panel in the top-left corner showing:
-          • Red  : N
-          • Green: M
-          • FPS  : XX.X
+                Draws a semi-transparent panel in the top-left corner showing:
+                    • Red   : N
+                    • Yellow: M
+                    • FPS   : XX.X
           • Any extra_lines you pass in
         """
         h, w = frame.shape[:2]
         panel_w = 220
         lines   = [
             f"  Red   : {counts.get('red',  0):>3}",
-            f"  Green : {counts.get('green',0):>3}",
+            f"  Yellow: {counts.get('yellow',0):>3}",
             f"  FPS   : {fps:>5.1f}",
         ]
         if extra_lines:
@@ -161,8 +161,8 @@ class HUDRenderer:
             text_color = BGR["white"]
             if "Red" in line:
                 text_color = BGR["red"]
-            elif "Green" in line:
-                text_color = BGR["green"]
+            elif "Yellow" in line:
+                text_color = BGR["yellow"]
             elif "FPS" in line:
                 fps_val = fps
                 text_color = BGR["green"] if fps_val >= 20 else (
